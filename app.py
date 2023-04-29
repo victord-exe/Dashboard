@@ -161,6 +161,9 @@ total_inasist = np.sum(inasistencias_diarias.values)
 # total_asist   ---> suma de todas las asistencias del grupo al final del mes   = 16005
 # total_inasist ---> suma de todas las inasistencias del grupo al final del mes = 15995
 
+print(df.keys())
+
+
 # -------------------------------- DASHBOARD -----------------------------============
 
 # cake graph
@@ -170,13 +173,13 @@ df_asistencias = pd.DataFrame([data])
 df_asistencias_diarias = asistencias_diarias.to_frame()
 
 
-print("\n\n", type(asistencias_diarias))
+#print("\n\n", type(asistencias_diarias))
 # print(df_asistencias_diarias)
 # asistencias_diarias = asistencias_diarias.append({'DAYS', 'ATTENDANCE'})
-print("\n\n", df_asistencias_diarias.index)
-print("\n\n", len(df_asistencias_diarias.values))
-print(df.columns)
-print("\n\n")
+#print("\n\n", df_asistencias_diarias.index)
+#print("\n\n", len(df_asistencias_diarias.values))
+#print(df.columns)
+#print("\n\n")
 # --------------------------------
 
 # Asistencias anuales
@@ -189,18 +192,27 @@ app = Dash(__name__)
 app.layout = html.Div(
     className='container',
     children=[
+
         html.Header(
             className='header',
             children=[
-                html.H1(children='PORCENTAJE TOTAL: ASISTENCIAS VS INASISTENCIAS')
+                    html.Link(
+                        rel='stylesheet',
+                        href='https://bootswatch.com/4/flatly/bootstrap.min.css'
+                    ),
+                html.Div(className="Header", children=[
+                    html.H1(children='Dashboard de asistencia' , style= {'textAlign' : 'center', 'marginTop': '50px'}),
+                    
+                ])    
+                
             ]
         ),
 
         html.Div(
             className='content',
             style={'display': 'flex', 'flex-wrap': 'wrap'},
-
             children=[
+                html.H4(children='Porcentaje de asistencias vs porcentaje de inasistencias' , style= {'width': '100%', 'textAlign' : 'center', 'marginTop': '20px'}),
                 html.Div(
                     className='chart',
                     style={'flex': '50%'},
@@ -216,11 +228,10 @@ app.layout = html.Div(
                                         'y': 'No. Asistencias diarias'},
                                 color_discrete_sequence=['#0099ff']
                             ),
-                            style={'height': '500px', 'width': '100%'}
+                            style={'height': '350px', 'width': '100%', 'flex': 'nowrap'}
                         )
                     ]
                 ),
-
                 html.Div(
                     className='chart',
                     style={'flex': '50%'},
@@ -237,7 +248,38 @@ app.layout = html.Div(
                                         'y': 'No. Inasistencias diarias'},
                                 color_discrete_sequence=['#83072D']
                             ),
-                            style={'height': '500px', 'width': '100%', }
+                            style={'height': '350px', 'width': '100%', 'flex': 'nowrap'}
+                        )
+                    ]
+                ),
+
+                html.Div(
+                    className='pie',
+                    style={'flex': '50%', 'marginTop': '10px'},
+                    children=[
+                        dcc.Graph(
+                            figure=px.pie(
+                                df_asistencias,
+                                values=df_asistencias.values[0],
+                                names=df_asistencias.columns,
+                                hole=.4,
+                                color_discrete_sequence=['#0099ff', '#83072D'],
+                            ).update_traces(
+                                hovertemplate='<b>%{label}</b><br><br>' +
+                                'Asistencias: %{value}<br>' +
+                                # Actualiza el formato del texto de información sobre herramientas (hover)
+                                'Porcentaje: %{percent:.1%}%',
+                                # Actualiza el tamaño y el color de la fuente de las etiquetas
+                                textfont=dict(color='white', size=15),
+                                # Agrega un borde blanco alrededor de cada sección
+                                marker=dict(line=dict(color='white', width=2)),
+                                # Actualiza la forma en que se muestra el texto en cada sección del pastel
+                                texttemplate='%{label}<br>%{percent:.1%}%'
+                            ).update_layout(
+                                showlegend = False,
+                                margin=dict(l=100),
+                            ),
+                            style={'height': '350px', 'width': '100%'},
                         )
                     ]
                 ),
@@ -247,6 +289,7 @@ app.layout = html.Div(
                     style={'flex': '50%'},
 
                     children=[
+                        html.H4("Tabla de participantes", style= {'textAlign' : 'center',  'marginTop': '20px'}),
                         dash_table.DataTable(data=df.to_dict('records'),  # Ahora agregar otra columna con el no de asistencais.
                                              columns=[{'name': col, 'id': col} for col in df.iloc[:, 0:4]] + [
                                                  {'name': col, 'id': col} for col in df.iloc[:, 36:38]],
@@ -267,37 +310,13 @@ app.layout = html.Div(
                                     'backgroundColor': '#f9dbd7',
                                     'color': 'black'
                                 }
-                        ]
+                            ]
+                            
                         )
                     ]
                 ),
 
-                html.Div(
-                    className='pie',
-                    style={'flex': '50%'},
-                    children=[
-                        dcc.Graph(
-                            figure=px.pie(
-                                df_asistencias,
-                                values=df_asistencias.values[0],
-                                names=df_asistencias.columns,
-                                hole=.4,
-                                title='PORCENTAJE TOTAL: ASISTENCIAS VS INASISTENCIAS',
-                                color_discrete_sequence=['#0099ff', '#83072D'],
-                            ).update_layout(
-                                legend=dict(
-                                    orientation="h",
-                                    yanchor='bottom',
-                                    y=-0.2,
-                                    xanchor='center',
-                                    x=0.5
-                                ),
-                                margin=dict(l=100),
-                            ),
-                            style={'height': '500px', 'width': '100%'},
-                        )
-                    ]
-                ),
+                
 
             ]
         )
