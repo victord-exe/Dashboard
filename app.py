@@ -20,7 +20,7 @@ cant_dias = len(filtrado)
 # print('cant de dias de clases: ', cant_dias)
 
 
-# Contando asistencias / inasistencias dia 1
+# Contando asistencias / inasisten  cias dia 1
 true_d1 = (df['day1'] == True).sum()
 # print("C/A dia 1: ", true_d1)
 false_d1 = (df['day1'] == False).sum()
@@ -188,6 +188,10 @@ df_asistencias_diarias = asistencias_diarias.to_frame()
 app = Dash(__name__)
 
 # Layoutt
+colors = {
+    'background': '#111111',
+    'text': '#7FDBFF'
+}
 
 app.layout = html.Div(
     className='container',
@@ -212,7 +216,8 @@ app.layout = html.Div(
             className='content',
             style={'display': 'flex', 'flex-wrap': 'wrap'},
             children=[
-                html.H4(children='Porcentaje de asistencias vs porcentaje de inasistencias' , style= {'width': '100%', 'textAlign' : 'center', 'marginTop': '20px'}),
+                html.H6(children=f'Porcentaje de alumnos activos {por_asist}' , style= {'width': '100%', 'textAlign' : 'left', 'marginTop': '30px'}),
+                html.H4(children='Porcentaje de asistencias vs porcentaje de inasistencias' , style= {'width': '100%', 'textAlign' : 'center', 'marginTop': '40px'}),
                 html.Div(
                     className='chart',
                     style={'flex': '50%'},
